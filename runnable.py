@@ -1,18 +1,21 @@
 from fifo import FIFO
 from messagesender import MessageSender
 
-class Runnable (MessageSender):
-    def __init__ (self, buildEnv, runEnv):
+class Runnable:
+    def __init__ (self, owner, buildEnv, runEnv):
+        self._owner = owner
         self._buildEnv = buildEnv
         self._runEnv = runEnv
         self._inputq = FIFO ()
         self._outputq = FIFO ()
 
-    # external to-be-implemented in descendent
-    def step (self, message):
-        raise Exception (f'step must be overridden for {self.name}')
+    # external to-be-implemented in owner
+    def step (self):
+        return self._owner.step ()
     def isBusy (self):
-        raise Exception ("isBusy not overridden")
+        return self._owner.isBusy ()
+    def handleIfReady (self):
+        return self._owner.handleIfReady ()
 
     # exported
     def run (self):

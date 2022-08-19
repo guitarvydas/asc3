@@ -1,9 +1,11 @@
 from fifo import FIFO
 from message import Message
-from messagehandler import MessageHandler
 
-class MessageSender (MessageHandler):
-    def __init__ (self, buildEnv, runEnv):
+class MessageSender:
+    def __init__ (self, owner, buildEnv, runEnv):
+        self._owner = owner
+        self._buildEnv = buildEnv
+        self._runEnv = runEnv
         self._outputq = FIFO ()
 
     def outputs (self):

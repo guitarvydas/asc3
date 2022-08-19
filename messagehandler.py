@@ -1,5 +1,10 @@
+from fifo import FIFO
+
 class MessageHandler:
-    def __init__ (buildEnv, runEnv):
+    def __init__ (self, owner, buildEnv, runEnv):
+        self._owner = owner
+        self._buildEnv = buildEnv
+        self._runEnv = runEnv
         self._inputq = FIFO ()
         
     def inject (self, message):
