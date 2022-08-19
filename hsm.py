@@ -1,9 +1,11 @@
 from component import Component
 
 debugHSM = True
-class HSM (Component):
+class HSM:
     def __init__ (self, buildEnv, runEnv):
-        super ().__init__ (buildEnv, runEnv))
+        self._messageHandler = MessageHandler (self, buildEnv, runEnv)
+        self._messageSender = MessageSender (self, buildEnv, runEnv)
+        self._runnable = Runnable (self, buildEnv, runEnv)
         self._machineEnter = buildEnv ["enter"]
         self._machineExit = buildEnv ["exit"]
         self._state = None
@@ -38,7 +40,7 @@ class HSM (Component):
     def reset (self):
         self.exit ()
         self.enterDefault ()
-
+        
     def handle (self, message):
         if debugHSM:
             print (f'<handle {self.name ()} />')
@@ -54,14 +56,6 @@ class HSM (Component):
         self._state = self.lookupState (nextStateName)
         self.enter ()
 
-    def run (self):
-        while self.isBusy ():
-            self.step ()
-        while self.handleIfReady ():
-            while self.isBusy ():
-                self.step()
-
-
     # a raw state machine always completes a step when handle() is called
     # and is never busy
     # (This is different for composite state machines)
@@ -71,13 +65,25 @@ class HSM (Component):
     def isBusy (self):
         return False
 
-    def wrapper (self):
-        # the topmost HSM wraps all layers below it
-        return self
+# delegations
+    def run (self):
+        self._runnable.run ()
 
-    def unhandledMessage (self, message):
-        raise Exception (f'unhandled message {message.port} in {self.name ()}')
-                         
+    def Handle (self, message):
+        return self._messageHandler.Handle (message)
+    def handleIfReady (self):
+        return self._messageHandler.handleIfReady ()
+    def inject (self, message):
+        return self._messageHandler.inject (message)
+    def isReady (self, message):
+        return self._messageHandler.Handle ()
+        
+
+    def send (self, port, message, cause):
+        return self._messageSender.send (port, message, cause)
+    def outputs (self):
+        return self._messageSender.outputs ()
+
 # worker bees
     def lookupState (self, name):
         for state in self._states:

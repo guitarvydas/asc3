@@ -10,11 +10,11 @@ class MessageHandler:
     def inject (self, message):
         self._inputq.enqueue (message)
 
-    def Handle (self, message):
+    def handle (self, message):
         sub = None
         if 'subLayer' in self._buildEnv:
             sub = self._buildEnv ['subLayer']
-        if self.HandlerChain (message, self._buildEnv ['handlerFunctions'].copy (), sub):
+        if self.handlerChain (message, self._buildEnv ['handlerFunctions'].copy (), sub):
             return True
         else:
             self.Fail (message)
@@ -35,10 +35,10 @@ class MessageHandler:
         raise Exception (f'unhandled message {message.port} for {self.name}')
         return False
 
-    def HandlerChain (self, message, functionList, subLayer):
+    def handlerChain (self, message, functionList, subLayer):
         if 0 == len (functionList):
             if subLayer:
-                return subLayer.Handle (message)
+                return subLayer.handle (message)
             else:
                 return False
         else:
@@ -48,12 +48,12 @@ class MessageHandler:
                 handler.func (message)
                 return True
             else:
-                return self.HandlerChain (message.port, message, restOfFunctionList, subLayer)
+                return self.handlerChain (message.port, message, restOfFunctionList, subLayer)
 
     def handleIfReady (self):
         if self.isReady ():
             m = self.dequeueInput ();
-            self.Handle (m)
+            self.handle (m)
             return True
         else:
             return False
