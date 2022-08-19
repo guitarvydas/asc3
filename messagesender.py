@@ -2,29 +2,10 @@ from fifo import FIFO
 from message import Message
 from messagehandler import MessageHandler
 
-class Component (MessageHandler):
+class MessageSender (MessageHandler):
     def __init__ (self, buildEnv, runEnv):
-        self._buildEnv = buildEnv
-        self._runEnv = runEnv
-        self._inputq = FIFO ()
         self._outputq = FIFO ()
 
-    # external to-be-implemented in descendent
-    def step (self, message):
-        raise Exception (f'step must be overridden for {self.name}')
-    def isBusy (self):
-        raise Exception ("isBusy not overridden")
-
-    # exported
-    def run (self):
-        while self.isBusy ():
-            self.step ()
-        while self.handleIfReady ():
-            while self.isBusy ():
-                self.step()
-
-            
-            
     def outputs (self):
         # return a dictionary of FIFOs, one FIFO per output port
         resultdict = {}
@@ -40,14 +21,6 @@ class Component (MessageHandler):
             r.reverse () ## newest result first
             resultdict2 [key] = r
         return resultdict2
-    def name (self):
-        parentname = ''
-        if self._buildEnv.parent:
-            parentname = self._buildEnv.parent.name () + '/'
-        return f'{parentname}{self._runEnv.instanceName}'
-
-    def baseName (self):
-        return self._runEnv.instanceName
 
     # internal - not exported
     def clearOutputs (self):
@@ -68,4 +41,3 @@ class Component (MessageHandler):
         m = Message (self, portname, data, trail)
         m.updateState ('output')
         self._outputq.enqueue (m)
-

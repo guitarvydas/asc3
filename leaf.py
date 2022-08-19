@@ -1,6 +1,6 @@
-from component import Component
+from runnable import Runnable
 
-class Leaf (Component):
+class Leaf (Runnable):
     def __init__ (self, buildEnv, runEnv):
         super ().__init__ (buildEnv, runEnv)
         
