@@ -67,6 +67,7 @@ class Component:
         for key in resultdict:
             fifo = resultdict [key]
             r = list (fifo.asDeque ())
+            r.reverse () ## newest result first
             resultdict2 [key] = r
         return resultdict2
     def isReady (self):

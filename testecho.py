@@ -29,6 +29,8 @@ h.inject (Message (None, '', 'a', None))
 h.inject (Message (None, '', 'b', None))
 h.inject (Message (None, '', 'c', None))
 h.inject (Message (None, '', 'hello world', None))
+# should print {'stdout': ['hello world', 'c', 'b', 'a']}
+# a "stack" of outputs, where the latest output is at the top of the stack
 print ('injected')
 outputs = h.run ()
 print ('done:')
