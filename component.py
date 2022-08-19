@@ -16,9 +16,6 @@ class Component (MessageHandler):
         raise Exception ("isBusy not overridden")
 
     # exported
-    def inject (self, message):
-        self._inputq.enqueue (message)
-
     def run (self):
         while self.isBusy ():
             self.step ()
@@ -43,8 +40,6 @@ class Component (MessageHandler):
             r.reverse () ## newest result first
             resultdict2 [key] = r
         return resultdict2
-    def isReady (self):
-        return (not self._inputq.isEmpty ())
     def name (self):
         parentname = ''
         if self._buildEnv.parent:
@@ -58,15 +53,10 @@ class Component (MessageHandler):
     def clearOutputs (self):
         self._outputq = FIFO ()
 
-    def enqueueInput (self, message):
-        self._inputq.enqueue (message)
-        
     def enqueueOutput (self, message):
         self._outputq.enqueue (message)
         
 
-    def dequeueInput (self):
-        return self._inputq.dequeue ()
     def dequeueOutput (self):
         return self._outputq.dequeue ()
 

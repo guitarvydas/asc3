@@ -1,4 +1,10 @@
 class MessageHandler:
+    def __init__ (buildEnv, runEnv):
+        self._inputq = FIFO ()
+        
+    def inject (self, message):
+        self._inputq.enqueue (message)
+
     def Handle (self, message):
         sub = None
         if 'subLayer' in self._buildEnv:
@@ -8,6 +14,18 @@ class MessageHandler:
         else:
             self.Fail (message)
 
+    def isReady (self):
+        return (not self._inputq.isEmpty ())
+            
+# not exported
+    def enqueueInput (self, message):
+        self._inputq.enqueue (message)
+        
+    def dequeueInput (self):
+        return self._inputq.dequeue ()
+
+
+# worker bees
     def Fail (self, message):
         raise Exception (f'unhandled message {message.port} for {self.name}')
         return False
@@ -27,8 +45,6 @@ class MessageHandler:
             else:
                 return self.HandlerChain (message.port, message, restOfFunctionList, subLayer)
 
-
-# worker bees
     def handleIfReady (self):
         if self.isReady ():
             m = self.dequeueInput ();
