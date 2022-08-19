@@ -29,13 +29,14 @@ class Component:
         sub = None
         if 'subLayer' in self._buildEnv:
             sub = self._buildEnv ['subLayer']
-        if self.HandlerChain (message, self._buildEnv ['handlerFunctions'], sub):
-            pass
+        if self.HandlerChain (message, self._buildEnv ['handlerFunctions'].copy (), sub):
+            return True
         else:
             self.Fail (message)
 
     def Fail (self, message):
         raise Exception (f'unhandled message {message.port} for {self.name}')
+        return False
 
     def HandlerChain (self, message, functionList, subLayer):
         if 0 == len (functionList):
@@ -66,7 +67,6 @@ class Component:
         for key in resultdict:
             fifo = resultdict [key]
             r = list (fifo.asDeque ())
-            r.reverse ()
             resultdict2 [key] = r
         return resultdict2
     def isReady (self):

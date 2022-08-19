@@ -25,6 +25,9 @@ buildEnv = {'name': 'echo tester'}
 runEnv = {'parent': None, 'instanceName': 'instanceE', }
 
 h = Echo (buildEnv, runEnv)
+h.inject (Message (None, '', 'a', None))
+h.inject (Message (None, '', 'b', None))
+h.inject (Message (None, '', 'c', None))
 h.inject (Message (None, '', 'hello world', None))
 print ('injected')
 outputs = h.run ()
