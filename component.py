@@ -1,7 +1,8 @@
 from fifo import FIFO
 from message import Message
+from messagehandler import MessageHandler
 
-class Component:
+class Component (MessageHandler):
     def __init__ (self, buildEnv, runEnv):
         self._buildEnv = buildEnv
         self._runEnv = runEnv
@@ -11,47 +12,19 @@ class Component:
     # external to-be-implemented in descendent
     def step (self, message):
         raise Exception (f'step must be overridden for {self.name}')
-    def inject (self, message):
-        self._inputq.enqueue (message)
     def isBusy (self):
         raise Exception ("isBusy not overridden")
 
     # exported
+    def inject (self, message):
+        self._inputq.enqueue (message)
+
     def run (self):
         while self.isBusy ():
             self.step ()
         while self.handleIfReady ():
             while self.isBusy ():
                 self.step()
-
-
-    def Handle (self, message):
-        sub = None
-        if 'subLayer' in self._buildEnv:
-            sub = self._buildEnv ['subLayer']
-        if self.HandlerChain (message, self._buildEnv ['handlerFunctions'].copy (), sub):
-            return True
-        else:
-            self.Fail (message)
-
-    def Fail (self, message):
-        raise Exception (f'unhandled message {message.port} for {self.name}')
-        return False
-
-    def HandlerChain (self, message, functionList, subLayer):
-        if 0 == len (functionList):
-            if subLayer:
-                return subLayer.Handle (message)
-            else:
-                return False
-        else:
-            handler = functionList.pop (0)
-            restOfFunctionList = functionList
-            if (message.port == handler.port):
-                handler.func (message)
-                return True
-            else:
-                return self.HandlerChain (message.port, message, restOfFunctionList, subLayer)
 
             
             
@@ -106,12 +79,3 @@ class Component:
         m.updateState ('output')
         self._outputq.enqueue (m)
 
-# worker bees
-    def handleIfReady (self):
-        if self.isReady ():
-            m = self.dequeueInput ();
-            self.Handle (m)
-            return True
-        else:
-            return False
-    
