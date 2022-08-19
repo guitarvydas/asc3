@@ -10,7 +10,13 @@ class Component:
 
     # external to-be-implemented in descendent
     def run (self):
-        raise Exception (f'run must be overridden for {self.name}')
+        while self.isBusy ():
+            self.step ()
+        while self.handleIfReady ():
+            while self.isBusy ():
+                self.step()
+
+
     def step (self, message):
         raise Exception (f'step must be overridden for {self.name}')
     def inject (self, message):
@@ -97,3 +103,12 @@ class Component:
         m.updateState ('output')
         self._outputq.enqueue (m)
 
+# worker bees
+    def handleIfReady (self):
+        if self.isReady ():
+            m = self.dequeueInput ();
+            self.Handle (m)
+            return True
+        else:
+            return False
+    
