@@ -9,14 +9,6 @@ class Component:
         self._outputq = FIFO ()
 
     # external to-be-implemented in descendent
-    def run (self):
-        while self.isBusy ():
-            self.step ()
-        while self.handleIfReady ():
-            while self.isBusy ():
-                self.step()
-
-
     def step (self, message):
         raise Exception (f'step must be overridden for {self.name}')
     def inject (self, message):
@@ -25,6 +17,14 @@ class Component:
         raise Exception ("isBusy not overridden")
 
     # exported
+    def run (self):
+        while self.isBusy ():
+            self.step ()
+        while self.handleIfReady ():
+            while self.isBusy ():
+                self.step()
+
+
     def Handle (self, message):
         sub = None
         if 'subLayer' in self._buildEnv:
@@ -65,7 +65,9 @@ class Component:
         resultdict2 = {}
         for key in resultdict:
             fifo = resultdict [key]
-            resultdict2 [key] = fifo.asDeque ()
+            r = list (fifo.asDeque ())
+            r.reverse ()
+            resultdict2 [key] = r
         return resultdict2
     def isReady (self):
         return (not self._inputq.isEmpty ())
