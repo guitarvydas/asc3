@@ -37,3 +37,9 @@ class Runnable:
         return self._runEnv.instanceName
 
 
+    def runEnv (self):
+        return self._runEnv
+    def buildEnv (self):
+        return self._buildEnv
+    def runnable (self):
+        return self._runnable

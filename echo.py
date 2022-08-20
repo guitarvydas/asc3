@@ -1,7 +1,8 @@
 from porthandler import PortHandler
 from leaf import Leaf
+from procedure import Procedure
 
-class Echo (Leaf):
+class Echo (Procedure):
     def f1 (self, message):
         self.send ('stdout', message.data, message)
 
