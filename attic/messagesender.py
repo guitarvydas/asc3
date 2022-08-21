@@ -2,7 +2,10 @@ from fifo import FIFO
 from message import Message
 
 class MessageSender:
-    def __init__ (self)
+    def __init__ (self, owner, buildEnv, runEnv):
+        self._owner = owner
+        self._buildEnv = buildEnv
+        self._runEnv = runEnv
         self._outputq = FIFO ()
 
     def outputs (self):
