@@ -13,12 +13,6 @@
 	   λ(send:fsend).
 	    λ(outputs:foutputs).
 		      ...
- (list
-   (
-yellow
-green
-red
-
 
 def fsend (self, port, message, cause, env):
     env._outputq.enqueue (Message (port, message, cause))
