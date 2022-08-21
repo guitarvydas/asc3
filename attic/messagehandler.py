@@ -1,25 +1,27 @@
 from fifo import FIFO
 
 class MessageHandler:
-    def __init__ (self, handlerFunctions):
-        self._handlerFunctions = handlerFunctions
+    def __init__ (self, owner, buildEnv, runEnv):
+        self._owner = owner
+        self._buildEnv = buildEnv
+        self._runEnv = runEnv
         self._inputq = FIFO ()
         
     def inject (self, message):
         self._inputq.enqueue (message)
 
-
-    def handleIfReady (self):
-        if self.isReady ():
-            m = self.dequeueInput ();
-            self.handle (m)
+    def handle (self, message):
+        sub = None
+        if 'subLayer' in self._buildEnv:
+            sub = self._buildEnv ['subLayer']
+        if self.handlerChain (message, self._buildEnv ['handlerFunctions'].copy (), sub):
             return True
         else:
-            return False
+            self.Fail (message)
 
     def isReady (self):
-        return (0 < len (self._inputq))
-    
+        return (not self._inputq.isEmpty ())
+            
 # not exported
     def enqueueInput (self, message):
         self._inputq.enqueue (message)
@@ -47,5 +49,13 @@ class MessageHandler:
                 return True
             else:
                 return self.handlerChain (message.port, message, restOfFunctionList, subLayer)
+
+    def handleIfReady (self):
+        if self.isReady ():
+            m = self.dequeueInput ();
+            self.handle (m)
+            return True
+        else:
+            return False
     
             

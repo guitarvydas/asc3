@@ -1,4 +1,5 @@
 from porthandler import PortHandler
+from leaf import Leaf
 from procedure import Procedure
 
 class Echo (Procedure):
@@ -7,4 +8,8 @@ class Echo (Procedure):
 
     def __init__ (self, buildEnv, runEnv):
         h1 = PortHandler ('', self.f1)
-        super ().__init__ (h1)
+        # buildEnv' = cons ([h1], buildEnv)
+        buildEnvPrime = buildEnv.copy ()
+        buildEnvPrime['handlerFunctions'] = [h1]
+        # 
+        super ().__init__ (buildEnv=buildEnvPrime, runEnv=runEnv)

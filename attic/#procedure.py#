@@ -1,0 +1,8 @@
+from hsm import HSM
+from state import State
+
+class Procedure:
+    def __init (buildEnv, runEnv):
+        s = StatePrototype (buildEnv)
+        self._hsm = HSM (buildEnv, runEnv, [s], 'default')
+    pass
